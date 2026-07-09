@@ -1,3 +1,3 @@
-# Test
+# Updated Test
 
-This is a test note.
+This note has been updated!
