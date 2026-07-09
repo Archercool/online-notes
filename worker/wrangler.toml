@@ -1,0 +1,9 @@
+name = "online-notes-api"
+main = "src/index.js"
+compatibility_date = "2024-12-01"
+
+[vars]
+GITHUB_REPO = "yourname/your-repo"
+
+# 将 GITHUB_TOKEN 存入 secrets（不要写在这里）
+# 运行: npx wrangler secret put GITHUB_TOKEN
