@@ -27,33 +27,11 @@ const MoonIcon = () => (
   </svg>
 );
 
-const PlusIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="12" y1="5" x2="12" y2="19" />
-    <line x1="5" y1="12" x2="19" y2="12" />
-  </svg>
-);
-
-const SearchIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="11" cy="11" r="8" />
-    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-  </svg>
-);
-
 const MenuIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <line x1="3" y1="12" x2="21" y2="12" />
     <line x1="3" y1="6" x2="21" y2="6" />
     <line x1="3" y1="18" x2="21" y2="18" />
-  </svg>
-);
-
-const SaveIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-    <polyline points="17 21 17 13 7 13 7 21" />
-    <polyline points="7 3 7 8 15 8" />
   </svg>
 );
 
@@ -64,13 +42,10 @@ const TrashIcon = () => (
   </svg>
 );
 
-const NoteIcon = () => (
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+const FileIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
     <polyline points="14 2 14 8 20 8" />
-    <line x1="16" y1="13" x2="8" y2="13" />
-    <line x1="16" y1="17" x2="8" y2="17" />
-    <polyline points="10 9 9 9 8 9" />
   </svg>
 );
 
@@ -145,16 +120,16 @@ export default function AdminPage() {
       });
       const data = await res.json();
       if (data.sha) setSha(data.sha);
-      showToast('已保存');
+      showToast('saved');
     } catch (err) {
-      showToast('保存失败', 'error');
+      showToast('save failed', 'error');
     } finally {
       setSaving(false);
     }
   };
 
   const createFile = async () => {
-    const name = prompt('新笔记名称（不含 .md 后缀）：');
+    const name = prompt('note name (without .md):');
     if (!name) return;
     const path = name.endsWith('.md') ? name : `${name}.md`;
     try {
@@ -171,16 +146,16 @@ export default function AdminPage() {
       if (data.success) {
         await loadFiles();
         await loadFile({ path, name });
-        showToast('已创建');
+        showToast('created');
       }
     } catch (err) {
-      showToast('创建失败', 'error');
+      showToast('create failed', 'error');
     }
   };
 
   const deleteFile = async () => {
     if (!currentFile) return;
-    if (!confirm(`确定删除 ${currentFile.name}？`)) return;
+    if (!confirm(`delete ${currentFile.name}?`)) return;
     try {
       const res = await fetch(`${API_BASE}/api/delete`, {
         method: 'POST',
@@ -197,10 +172,10 @@ export default function AdminPage() {
         setContent('');
         setSha('');
         await loadFiles();
-        showToast('已删除');
+        showToast('deleted');
       }
     } catch (err) {
-      showToast('删除失败', 'error');
+      showToast('delete failed', 'error');
     }
   };
 
@@ -243,31 +218,23 @@ export default function AdminPage() {
         <div className="sidebar-header">
           <div className="sidebar-brand">
             <div className="sidebar-logo">
-              <NoteIcon />
+              <FileIcon />
             </div>
-            <span className="sidebar-title">
-              <span className="bracket">[</span>
-              笔记管理
-              <span className="bracket">]</span>
-            </span>
+            <span className="sidebar-title">notes</span>
           </div>
         </div>
 
         <div className="sidebar-actions">
           <button className="btn-new" onClick={createFile}>
-            <span className="bracket">+</span>
-            新建笔记
+            + new
           </button>
         </div>
 
         <div className="search-wrapper">
-          <span className="search-icon">
-            <SearchIcon />
-          </span>
           <input
             className="search-input"
             type="text"
-            placeholder="搜索笔记..."
+            placeholder="search..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -276,7 +243,7 @@ export default function AdminPage() {
         <div className="file-list">
           {filteredFiles.length === 0 ? (
             <div className="empty-state">
-              {files.length === 0 ? '还没有笔记\n点击上方按钮创建' : '没有匹配的笔记'}
+              {files.length === 0 ? '// no notes yet\n// click + new to create' : '// no matches'}
             </div>
           ) : (
             filteredFiles.map((file) => (
@@ -293,14 +260,12 @@ export default function AdminPage() {
         </div>
 
         <div className="sidebar-footer">
-          <span className="file-count">{files.length} 篇笔记</span>
+          <span className="file-count">{files.length} files</span>
           <div className="footer-actions">
-            <Link to="/" className="view-link" title="查看阅读页面">
-              <span className="bracket">[</span>
-              阅读
-              <span className="bracket">]</span>
+            <Link to="/" className="view-link">
+              read
             </Link>
-            <button className="theme-toggle" onClick={toggleTheme} title="切换主题">
+            <button className="theme-toggle" onClick={toggleTheme}>
               {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
             </button>
           </div>
@@ -309,7 +274,7 @@ export default function AdminPage() {
 
       <main className="main">
         {!showSidebar && (
-          <button className="show-sidebar-btn" onClick={() => setShowSidebar(true)} title="展开侧边栏">
+          <button className="show-sidebar-btn" onClick={() => setShowSidebar(true)}>
             <MenuIcon />
           </button>
         )}
@@ -326,37 +291,35 @@ export default function AdminPage() {
                   className={`toolbar-btn ${!isPreview ? 'active' : ''}`}
                   onClick={() => setIsPreview(false)}
                 >
-                  编辑
+                  edit
                 </button>
                 <button
                   className={`toolbar-btn ${isPreview ? 'active' : ''}`}
                   onClick={() => setIsPreview(true)}
                 >
-                  预览
+                  preview
                 </button>
               </div>
               <div className="toolbar-right">
                 <div className="markdown-tools">
-                  <button onClick={() => insertMarkdown('**$1**')} title="粗体">B</button>
-                  <button onClick={() => insertMarkdown('*$1*')} title="斜体"><em>I</em></button>
-                  <button onClick={() => insertMarkdown('~~$1~~')} title="删除线"><s>S</s></button>
-                  <button onClick={() => insertMarkdown('`$1`')} title="行内代码">&lt;/&gt;</button>
-                  <button onClick={() => insertMarkdown('\n```\n$1\n```\n')} title="代码块">{'{ }'}</button>
-                  <button onClick={() => insertMarkdown('[$1](url)')} title="链接">链接</button>
-                  <button onClick={() => insertMarkdown('![alt](url)')} title="图片">图片</button>
-                  <button onClick={() => insertMarkdown('\n> $1\n')} title="引用">引用</button>
-                  <button onClick={() => insertMarkdown('\n- $1\n')} title="列表">列表</button>
+                  <button onClick={() => insertMarkdown('**$1**')} title="bold">B</button>
+                  <button onClick={() => insertMarkdown('*$1*')} title="italic">I</button>
+                  <button onClick={() => insertMarkdown('~~$1~~')} title="strikethrough">S</button>
+                  <button onClick={() => insertMarkdown('`$1`')} title="code">&lt;/&gt;</button>
+                  <button onClick={() => insertMarkdown('\n```\n$1\n```\n')} title="code block">{'{ }'}</button>
+                  <button onClick={() => insertMarkdown('[$1](url)')} title="link">link</button>
+                  <button onClick={() => insertMarkdown('![alt](url)')} title="image">img</button>
+                  <button onClick={() => insertMarkdown('\n> $1\n')} title="quote">quote</button>
+                  <button onClick={() => insertMarkdown('\n- $1\n')} title="list">list</button>
                 </div>
                 <button
                   className="btn-save"
                   onClick={saveFile}
                   disabled={saving}
                 >
-                  <span className="bracket">[</span>
-                  {saving ? '保存中...' : '保存'}
-                  <span className="bracket">]</span>
+                  {saving ? 'saving...' : 'save'}
                 </button>
-                <button className="btn-delete" onClick={deleteFile} title="删除笔记">
+                <button className="btn-delete" onClick={deleteFile}>
                   <TrashIcon />
                 </button>
               </div>
@@ -364,9 +327,7 @@ export default function AdminPage() {
 
             <div className="editor-container">
               {loading ? (
-                <div className="loading">
-                  <span className="bracket">&gt;</span> 加载中...
-                </div>
+                <div className="loading">loading...</div>
               ) : isPreview ? (
                 <div className="preview">
                   <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
@@ -379,7 +340,7 @@ export default function AdminPage() {
                   className="editor"
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  placeholder="> 开始写作... (Ctrl+S 保存)"
+                  placeholder="> start writing... (Ctrl+S to save)"
                   spellCheck={false}
                 />
               )}
@@ -389,34 +350,26 @@ export default function AdminPage() {
           <div className="welcome">
             <div className="welcome-content">
               <div className="welcome-icon">
-                <NoteIcon />
+                <FileIcon />
               </div>
-              <h1>
-                <span className="bracket">[</span>
-                笔记管理
-                <span className="bracket">]</span>
-              </h1>
-              <p>
-                <span className="bracket">//</span> 在这里创建、编辑和管理你的笔记
-              </p>
+              <h1>// admin</h1>
+              <p>create, edit, and manage your notes</p>
               <div className="welcome-features">
                 <div className="feature">
                   <span className="feature-dot" />
-                  <span className="bracket">&gt;</span> 创建和编辑 Markdown 笔记
+                  markdown editor
                 </div>
                 <div className="feature">
                   <span className="feature-dot" />
-                  <span className="bracket">&gt;</span> 实时预览渲染效果
+                  live preview
                 </div>
                 <div className="feature">
                   <span className="feature-dot" />
-                  <span className="bracket">&gt;</span> 自动保存到 GitHub
+                  github sync
                 </div>
               </div>
               <button className="btn-start" onClick={createFile}>
-                <span className="bracket">[</span>
-                创建第一篇笔记
-                <span className="bracket">]</span>
+                + new note
               </button>
             </div>
           </div>
