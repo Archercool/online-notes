@@ -715,3 +715,140 @@
     transition: none !important;
   }
 }
+
+/* ===== Auth Page ===== */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  position: relative;
+}
+
+.auth-card {
+  width: 320px;
+  padding: 32px;
+  background: var(--bg-surface);
+  border: var(--pixel-border) solid var(--border);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+}
+
+.auth-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--pixel-border) solid var(--accent);
+  color: var(--accent);
+}
+
+.auth-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.auth-card h1 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+.auth-card p {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--bg);
+  border: var(--pixel-border) solid var(--border);
+  color: var(--text);
+  font-size: 13px;
+  margin-bottom: 12px;
+  outline: none;
+}
+
+.auth-input:focus {
+  border-color: var(--accent);
+  box-shadow: var(--glow);
+}
+
+.auth-input:disabled {
+  opacity: 0.6;
+}
+
+.auth-error {
+  font-size: 11px;
+  color: var(--danger);
+  margin-bottom: 12px;
+  text-align: left;
+}
+
+.auth-btn {
+  width: 100%;
+  padding: 10px;
+  background: var(--accent);
+  color: var(--bg);
+  border: var(--pixel-border) solid var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.auth-btn:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.auth-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.auth-back {
+  display: inline-block;
+  margin-top: 16px;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+.auth-back:hover {
+  color: var(--accent);
+}
+
+.auth-theme {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+
+/* ===== Logout Button ===== */
+.logout-btn {
+  width: 28px;
+  height: 28px;
+  border: var(--pixel-border) solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+  color: var(--text-muted);
+}
+
+.logout-btn:hover {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.logout-btn svg {
+  width: 14px;
+  height: 14px;
+}

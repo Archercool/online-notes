@@ -49,7 +49,21 @@ const FileIcon = () => (
   </svg>
 );
 
+const LockIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+  </svg>
+);
+
 export default function AdminPage() {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem('admin_auth') === 'true';
+  });
+  const [password, setPassword] = useState('');
+  const [authError, setAuthError] = useState('');
+  const [authLoading, setAuthLoading] = useState(false);
+
   const [files, setFiles] = useState([]);
   const [currentFile, setCurrentFile] = useState(null);
   const [content, setContent] = useState('');
@@ -74,6 +88,37 @@ export default function AdminPage() {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
   };
 
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setAuthLoading(true);
+    setAuthError('');
+    try {
+      const res = await fetch(`${API_BASE}/api/auth`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        localStorage.setItem('admin_auth', 'true');
+        setIsAuthenticated(true);
+      } else {
+        setAuthError('// invalid password');
+        setPassword('');
+      }
+    } catch (err) {
+      setAuthError('// connection failed');
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('admin_auth');
+    setIsAuthenticated(false);
+    setPassword('');
+  };
+
   const loadFiles = useCallback(async () => {
     try {
       const res = await fetch(`${API_BASE}/api/files`);
@@ -85,8 +130,10 @@ export default function AdminPage() {
   }, []);
 
   useEffect(() => {
-    loadFiles();
-  }, [loadFiles]);
+    if (isAuthenticated) {
+      loadFiles();
+    }
+  }, [isAuthenticated, loadFiles]);
 
   const loadFile = async (file) => {
     setLoading(true);
@@ -212,6 +259,39 @@ export default function AdminPage() {
     }, 0);
   };
 
+  if (!isAuthenticated) {
+    return (
+      <div className="auth-page" data-theme={theme}>
+        <div className="auth-card">
+          <div className="auth-icon">
+            <LockIcon />
+          </div>
+          <h1>// admin access</h1>
+          <p>enter password to continue</p>
+          <form onSubmit={handleLogin}>
+            <input
+              className="auth-input"
+              type="password"
+              placeholder="password..."
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={authLoading}
+              autoFocus
+            />
+            {authError && <div className="auth-error">{authError}</div>}
+            <button className="auth-btn" type="submit" disabled={authLoading || !password}>
+              {authLoading ? 'verifying...' : '> enter'}
+            </button>
+          </form>
+          <Link to="/" className="auth-back">← back to notes</Link>
+        </div>
+        <button className="theme-toggle auth-theme" onClick={toggleTheme}>
+          {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="admin-app">
       <aside className={`sidebar ${showSidebar ? 'open' : 'closed'}`}>
@@ -267,6 +347,13 @@ export default function AdminPage() {
             </Link>
             <button className="theme-toggle" onClick={toggleTheme}>
               {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+            </button>
+            <button className="logout-btn" onClick={handleLogout} title="logout">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
             </button>
           </div>
         </div>
